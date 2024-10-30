@@ -1,5 +1,11 @@
 import * as pc from "playcanvas";
 
+interface CustomBox extends pc.Entity {
+  isFalling: boolean;
+  fallDelay: number;
+  fallSpeed: number;
+}
+
 window.onload = () => {
   const canvas = document.createElement("canvas");
   canvas.width = 600;
@@ -11,6 +17,7 @@ window.onload = () => {
 
   //start app
   app.start();
+  // setInterval(() => {createBullet()},50)
 
   //create camera entity
   const cameraEntity = new pc.Entity("MainCamera");
@@ -27,11 +34,11 @@ window.onload = () => {
 
   // ========= ADD A BOX ================
   const numberOfBox = 30;
-  const boxes: pc.Entity[] = [];
+  const boxes: CustomBox[] = [];
 
   function regenerateBoxes() {
     for (let i = 0; i < numberOfBox; i++) {
-      const box = new pc.Entity();
+      const box = new pc.Entity() as CustomBox;
       app.root.addChild(box);
 
       // Load 3D model for the box
@@ -80,11 +87,19 @@ window.onload = () => {
               }
             }
           );
+          // Add attribute isFalling, fallDelay in box
+          box.isFalling = false;
+          box.fallDelay = 3000 + i * 500;
+          box.fallSpeed = 3;
+          setTimeout(() => {
+            box.isFalling = true;
+          }, box.fallDelay);
           boxes.push(box);
         }
       );
     }
   }
+
   app.on("update", (dt) => {
     if (boxes.length === 0) {
       regenerateBoxes();
@@ -178,7 +193,7 @@ window.onload = () => {
   });
 
   //========= add bullet ============
-  const bullets = [];
+  const bullets: pc.Entity[] = [];
   const speedBullet = 5;
 
   function createBullet() {
@@ -199,7 +214,28 @@ window.onload = () => {
         });
       }
     );
-    bullet.setLocalScale(2, 2, 2);
+    app.assets.loadFromUrl(
+      "../Shooter/Assets/Textures/2.png",
+      "texture",
+      // @ts-ignore
+      (err, asset: pc.Asset | undefined) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        const material = new pc.StandardMaterial();
+        // @ts-ignore
+        material.diffuseMap = asset?.resource;
+        material.update();
+        console.log(bullet.model);
+        if (bullet.model) {
+          bullet.model.meshInstances.forEach((meshInstance) => {
+            meshInstance.material = material;
+          });
+        }
+      }
+    );
+    bullet.setLocalScale(1, 1, 1);
     const characterPosition = characterEntity.getPosition().clone();
     bullet.setPosition(
       characterPosition.x,
@@ -210,6 +246,7 @@ window.onload = () => {
     // @ts-ignore
     bullets.push(bullet);
   }
+
   app.on("update", (dt) => {
     for (let i = bullets.length - 1; i >= 0; i--) {
       const bullet = bullets[i];
@@ -237,6 +274,28 @@ window.onload = () => {
         // @ts-ignore
         bullet.destroy();
         bullets.splice(i, 1);
+      }
+    }
+    // Handle collision between box with spaceship
+    for (let i = boxes.length - 1; i >= 0; i--) {
+      const box = boxes[i];
+      if (box.isFalling) {
+        box.translate(0, -box.fallSpeed * dt, 0);
+        const boxPos = box.getPosition();
+        const shipPos = characterEntity.getPosition();
+        const distance = boxPos.distance(shipPos);
+
+        //if box collision with ship
+        if (distance < 1) {
+          alert("Game Over");
+          location.reload();
+        }
+        //if box fall to low(below ship)
+        if (boxPos.y < -3) {
+          app.root.removeChild(box);
+          box.destroy();
+          boxes.splice(i, 1);
+        }
       }
     }
   });

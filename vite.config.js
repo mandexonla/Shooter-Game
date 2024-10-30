@@ -6,6 +6,7 @@ export default defineConfig({
     del({ targets: "dist/*", ignore: ["dist/assets"], runOnce: true }),
     del({ targets: "dist/*", ignore: ["dist/assets", "dist/index"], runOnce: true, hook: "buildEnd" }),
   ],
+  mode: "development",
   server: {
     port: 8080,
     watch: {
@@ -17,8 +18,8 @@ export default defineConfig({
     assetsDir: "",
     minify: false,
     emptyOutDir: false,
-    copyPublicDir: false,
+    copyPublicDir: true,
     chunkSizeWarningLimit: 1024 * 2, // 2MB
   },
-  publicDir: "dist"
+  publicDir: "assets"
 });

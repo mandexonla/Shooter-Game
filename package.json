@@ -5,6 +5,7 @@
   "author": "Purus Hai",
   "scripts": {
     "start": "vite serve --host --open",
+    "preview": "vite preview --port 9000",
     "build": "vite build"
   },
   "dependencies": {

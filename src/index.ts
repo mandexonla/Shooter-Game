@@ -43,12 +43,12 @@ window.onload = () => {
 
       // Load 3D model for the box
       app.assets.loadFromUrl(
-        "../Shooter/Assets/Models/comet.glb",
+        "Models/comet.glb",
         "model",
         // @ts-ignore
         (err, asset: pc.Asset | undefined) => {
           if (err) {
-            console.error(err);
+            // console.error(err);
             return;
           }
           box.addComponent("model", {
@@ -68,7 +68,7 @@ window.onload = () => {
 
           // Load texture for the box
           app.assets.loadFromUrl(
-            "../Shooter/Assets/Textures/1.png",
+            "Textures/1.png",
             "texture",
             // @ts-ignore
             (err, asset: pc.Asset | undefined) => {
@@ -113,7 +113,7 @@ window.onload = () => {
 
   // Up load model 3D
   app.assets.loadFromUrl(
-    "../Shooter/Assets/Models/1.glb",
+    "Models/1.glb",
     "model",
     // @ts-ignore
     (err, asset: pc.Asset | undefined) => {
@@ -134,7 +134,7 @@ window.onload = () => {
 
   // load character texture
   app.assets.loadFromUrl(
-    "../Shooter/Assets/Textures/material_0_albedo.jpg",
+    "Textures/material_0_albedo.jpg",
     "texture",
     // @ts-ignore
     (err, asset: pc.Asset | undefined) => {
@@ -200,7 +200,7 @@ window.onload = () => {
     const bullet = new pc.Entity();
     app.root.addChild(bullet);
     app.assets.loadFromUrl(
-      "../Shooter/Assets/Models/bullet.glb",
+      "Models/bullet.glb",
       "model",
       // @ts-ignore
       (err, asset: pc.Asset | undefined) => {
@@ -215,7 +215,7 @@ window.onload = () => {
       }
     );
     app.assets.loadFromUrl(
-      "../Shooter/Assets/Textures/2.png",
+      "Textures/2.png",
       "texture",
       // @ts-ignore
       (err, asset: pc.Asset | undefined) => {
@@ -287,7 +287,8 @@ window.onload = () => {
 
         //if box collision with ship
         if (distance < 1) {
-          alert("Game Over");
+          console.log("Game Over");
+          // alert("Game Over");
           location.reload();
         }
         //if box fall to low(below ship)

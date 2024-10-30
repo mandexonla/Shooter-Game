@@ -288,7 +288,7 @@ window.onload = () => {
         //if box collision with ship
         if (distance < 1) {
           alert("Game Over");
-          location.reload();
+          window.location.reload();
         }
         //if box fall to low(below ship)
         if (boxPos.y < -3) {

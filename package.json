@@ -4,7 +4,8 @@
   "license": "UNLICENSED",
   "author": "Purus Hai",
   "scripts": {
-    "start": "vite serve --host --open"
+    "start": "vite serve --host --open",
+    "build": "vite build"
   },
   "dependencies": {
     "playcanvas": "^1.71.5"

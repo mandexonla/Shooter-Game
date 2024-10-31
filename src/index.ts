@@ -283,18 +283,14 @@ window.onload = () => {
         box.translate(0, -box.fallSpeed * dt, 0);
         const boxPos = box.getPosition();
         const shipPos = characterEntity.getPosition();
+        // @ts-ignore
         const distance = boxPos.distance(shipPos);
 
         //if box collision with ship
         if (distance < 1) {
-<<<<<<< HEAD:shooter/index.ts
-          alert("Game Over");
-          window.location.reload();
-=======
           console.log("Game Over");
           // alert("Game Over");
           location.reload();
->>>>>>> b38bd1aa4252cbd97dc155054da748db614ba748:src/index.ts
         }
         //if box fall to low(below ship)
         if (boxPos.y < -3) {

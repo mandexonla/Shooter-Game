@@ -1,12 +1,19 @@
 import * as pc from "playcanvas";
 
+document.getElementById("start-button")?.addEventListener("click", () => {
+  const container = document.getElementById("start-screen");
+  if (container) {
+    container.style.display = "none";
+  }
+});
+
 interface CustomBox extends pc.Entity {
   isFalling: boolean;
   fallDelay: number;
   fallSpeed: number;
 }
 
-window.onload = () => {
+function initializeGame() {
   const canvas = document.createElement("canvas");
   canvas.width = 600;
   canvas.height = 300;
@@ -17,6 +24,7 @@ window.onload = () => {
 
   //start app
   app.start();
+
   // setInterval(() => {createBullet()},50)
 
   //create camera entity
@@ -32,6 +40,27 @@ window.onload = () => {
   //set camera position
   cameraEntity.setPosition(0, 0, 10);
 
+  function setupSkybox(app) {
+    app.assets.loadFromUrl(
+      "Textures/test1.dds",
+      "texture",
+      (error, asset: pc.Asset) => {
+        const texture = asset.resource;
+        (<any>texture).rgbm = true;
+
+        app.setSkybox(asset);
+
+        //@ts-ignore
+        texture.magFilter = pc.FILTER_LINEAR;
+        //@ts-ignore
+        texture.minFilter = pc.FILTER_LINEAR_MIPMAP_LINEAR;
+        //@ts-ignore
+        texture.anisotropy = 16;
+        console.log(error);
+        return null;
+      }
+    );
+  }
   // ========= ADD A BOX ================
   const numberOfBox = 30;
   const boxes: CustomBox[] = [];
@@ -247,6 +276,37 @@ window.onload = () => {
     bullets.push(bullet);
   }
 
+  //=========ADD SCORE ============
+  let score = 0;
+  const scoreElement = document.createElement("div");
+  scoreElement.style.position = "absolute";
+  scoreElement.style.top = "10px";
+  scoreElement.style.right = "10px";
+  scoreElement.style.fontFamily = "'Press Start 2P', cursive";
+  scoreElement.style.fontSize = "16px";
+  scoreElement.style.color = "white";
+  scoreElement.innerText = `Score: ${score}`;
+  document.body.appendChild(scoreElement);
+
+  // Update score when bullet hit box
+  function handleBulletCollision(
+    bullet: pc.Entity,
+    box: CustomBox,
+    i: number,
+    j: number
+  ) {
+    // Remove bullet and box after collision
+    app.root.removeChild(boxes[j]);
+    boxes[j].destroy();
+    boxes.splice(j, 1);
+    app.root.removeChild(bullet);
+    bullet.destroy();
+    bullets.splice(i, 1);
+
+    // Update score
+    score += 1;
+    scoreElement.innerText = `Score: ${score}`;
+  }
   app.on("update", (dt) => {
     for (let i = bullets.length - 1; i >= 0; i--) {
       const bullet = bullets[i];
@@ -257,6 +317,10 @@ window.onload = () => {
 
       // Check collision with boxes
       for (let j = boxes.length - 1; j >= 0; j--) {
+        if (checkCollision(bullet, boxes[j])) {
+          handleBulletCollision(bullet, boxes[j], i, j);
+          break;
+        }
         if (checkCollision(bullet, boxes[j])) {
           // Handle bullet
           app.root.removeChild(boxes[j]);
@@ -313,4 +377,12 @@ window.onload = () => {
     const collisionThreshold = 0.5;
     return distance < collisionThreshold;
   }
-};
+  setupSkybox(app);
+}
+document.getElementById("start-button")?.addEventListener("click", () => {
+  const container = document.getElementById("start-screen");
+  if (container) {
+    container.style.display = "none";
+  }
+  initializeGame();
+});

@@ -1,4 +1,11 @@
 import * as pc from "playcanvas";
+import { Collision } from "./collision";
+import { Box } from "./box";
+import { Background } from "./background";
+
+const collision = new Collision();
+const box = new Box();
+const background = new Background();
 
 document.getElementById("start-button")?.addEventListener("click", () => {
   const container = document.getElementById("start-screen");
@@ -31,7 +38,6 @@ function initializeGame() {
   const cameraEntity = new pc.Entity("MainCamera");
 
   //add camera entity
-
   app.root.addChild(cameraEntity);
 
   cameraEntity.addComponent("camera", {
@@ -40,98 +46,10 @@ function initializeGame() {
   //set camera position
   cameraEntity.setPosition(0, 0, 10);
 
-  function setupSkybox(app) {
-    app.assets.loadFromUrl(
-      "Textures/test1.dds",
-      "texture",
-      (error, asset: pc.Asset) => {
-        const texture = asset.resource;
-        (<any>texture).rgbm = true;
-
-        app.setSkybox(asset);
-
-        //@ts-ignore
-        texture.magFilter = pc.FILTER_LINEAR;
-        //@ts-ignore
-        texture.minFilter = pc.FILTER_LINEAR_MIPMAP_LINEAR;
-        //@ts-ignore
-        texture.anisotropy = 16;
-        console.log(error);
-        return null;
-      }
-    );
-  }
-  // ========= ADD A BOX ================
-  const numberOfBox = 30;
-  const boxes: CustomBox[] = [];
-
-  function regenerateBoxes() {
-    for (let i = 0; i < numberOfBox; i++) {
-      const box = new pc.Entity() as CustomBox;
-      app.root.addChild(box);
-
-      // Load 3D model for the box
-      app.assets.loadFromUrl(
-        "Models/comet.glb",
-        "model",
-        // @ts-ignore
-        (err, asset: pc.Asset | undefined) => {
-          if (err) {
-            // console.error(err);
-            return;
-          }
-          box.addComponent("model", {
-            type: "asset",
-            asset: asset,
-          });
-
-          // Set scale and position for the box
-          const scale = 0.05;
-          box.setLocalScale(scale, scale, scale);
-
-          const randomX = Math.random() * 6 - 3;
-          const randomY = Math.random() * 3 + 1;
-          box.setPosition(randomX, randomY, 0);
-
-          app.on("update", (dt) => box.rotate(20 * dt, 20 * dt, 20 * dt));
-
-          // Load texture for the box
-          app.assets.loadFromUrl(
-            "Textures/1.png",
-            "texture",
-            // @ts-ignore
-            (err, asset: pc.Asset | undefined) => {
-              if (err) {
-                console.error(err);
-                return;
-              }
-              const material = new pc.StandardMaterial();
-              // @ts-ignore
-              material.diffuseMap = asset?.resource;
-              material.update();
-              if (box.model) {
-                box.model.meshInstances.forEach((meshInstance) => {
-                  meshInstance.material = material;
-                });
-              }
-            }
-          );
-          // Add attribute isFalling, fallDelay in box
-          box.isFalling = false;
-          box.fallDelay = 3000 + i * 500;
-          box.fallSpeed = 3;
-          setTimeout(() => {
-            box.isFalling = true;
-          }, box.fallDelay);
-          boxes.push(box);
-        }
-      );
-    }
-  }
-
+  // ========= ADD BOXES ============
   app.on("update", (dt) => {
-    if (boxes.length === 0) {
-      regenerateBoxes();
+    if (Box.boxes.length === 0) {
+      Box.regenerateBoxes(app);
     }
   });
 
@@ -203,7 +121,7 @@ function initializeGame() {
   app.keyboard = new pc.Keyboard(window);
 
   app.on("update", (dt) => {
-    // Di chuyển nhân vật
+    // move character
     if (app.keyboard.isPressed(pc.KEY_W)) {
       characterEntity.translate(0, moveSpeed * dt, 0);
     }
@@ -296,9 +214,9 @@ function initializeGame() {
     j: number
   ) {
     // Remove bullet and box after collision
-    app.root.removeChild(boxes[j]);
-    boxes[j].destroy();
-    boxes.splice(j, 1);
+    app.root.removeChild(Box.boxes[j]);
+    Box.boxes[j].destroy();
+    Box.boxes.splice(j, 1);
     app.root.removeChild(bullet);
     bullet.destroy();
     bullets.splice(i, 1);
@@ -316,16 +234,16 @@ function initializeGame() {
       const position = bullet.getPosition();
 
       // Check collision with boxes
-      for (let j = boxes.length - 1; j >= 0; j--) {
-        if (checkCollision(bullet, boxes[j])) {
-          handleBulletCollision(bullet, boxes[j], i, j);
+      for (let j = Box.boxes.length - 1; j >= 0; j--) {
+        if (collision.checkCollision(bullet, Box.boxes[j])) {
+          handleBulletCollision(bullet, Box.boxes[j], i, j);
           break;
         }
-        if (checkCollision(bullet, boxes[j])) {
+        if (collision.checkCollision(bullet, Box.boxes[j])) {
           // Handle bullet
-          app.root.removeChild(boxes[j]);
-          boxes[j].destroy();
-          boxes.splice(j, 1);
+          app.root.removeChild(Box.boxes[j]);
+          Box.boxes[j].destroy();
+          Box.boxes.splice(j, 1);
           app.root.removeChild(bullet);
           // @ts-ignore
           bullet.destroy();
@@ -341,8 +259,8 @@ function initializeGame() {
       }
     }
     // Handle collision between box with spaceship
-    for (let i = boxes.length - 1; i >= 0; i--) {
-      const box = boxes[i];
+    for (let i = Box.boxes.length - 1; i >= 0; i--) {
+      const box = Box.boxes[i];
       if (box.isFalling) {
         box.translate(0, -box.fallSpeed * dt, 0);
         const boxPos = box.getPosition();
@@ -360,24 +278,12 @@ function initializeGame() {
         if (boxPos.y < -3) {
           app.root.removeChild(box);
           box.destroy();
-          boxes.splice(i, 1);
+          Box.boxes.splice(i, 1);
         }
       }
     }
   });
-
-  // Check collision
-  function checkCollision(bullet: pc.Entity, box: pc.Entity): boolean {
-    const bulletPos = bullet.getPosition();
-    const boxPos = box.getPosition();
-    // Calculate distance between bullet and box
-    // @ts-ignore
-    const distance = bulletPos.distance(boxPos);
-    // Define a threshold for collision detection
-    const collisionThreshold = 0.5;
-    return distance < collisionThreshold;
-  }
-  setupSkybox(app);
+  background.setupSkybox(app);
 }
 document.getElementById("start-button")?.addEventListener("click", () => {
   const container = document.getElementById("start-screen");

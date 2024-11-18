@@ -27,14 +27,14 @@ export class Box {
             type: "asset",
             asset: asset,
           });
-          // Thiết lập scale và vị trí cho box
+          // Setting scale and position for the box
           const scale = 0.05;
           box.setLocalScale(scale, scale, scale);
           const randomX = Math.random() * 6 - 3;
           const randomY = Math.random() * 3 + 1;
           box.setPosition(randomX, randomY, 0);
 
-          // Xoay box
+          //  Rotate box
           app.on("update", (dt) => box.rotate(20 * dt, 20 * dt, 20 * dt));
 
           // Load texture cho box
@@ -59,7 +59,7 @@ export class Box {
             }
           );
 
-          // Thiết lập thuộc tính rơi cho box
+          // Set falling effect for the box
           box.isFalling = false;
           box.fallDelay = 3000 + i * 500;
           box.fallSpeed = 3;

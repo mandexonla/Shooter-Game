@@ -1,3 +1,4 @@
+import * as pc from "playcanvas";
 export class Background {
   constructor() {}
   setupSkybox(app) {

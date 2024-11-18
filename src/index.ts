@@ -2,6 +2,9 @@ import * as pc from "playcanvas";
 import { Collision } from "./collision";
 import { Box } from "./box";
 import { Background } from "./background";
+import { Spaceship } from "./spaceship";
+// import { Bullet } from "./bullet";
+// import { BulletManager } from "./bulletcollision";
 
 const collision = new Collision();
 const box = new Box();
@@ -29,6 +32,8 @@ function initializeGame() {
   // create a PlayCanvas application with the canvas
   const app = new pc.Application(canvas);
 
+  const ship = new Spaceship(app);
+
   //start app
   app.start();
 
@@ -45,63 +50,6 @@ function initializeGame() {
   });
   //set camera position
   cameraEntity.setPosition(0, 0, 10);
-
-  // ========= ADD BOXES ============
-  app.on("update", (dt) => {
-    if (Box.boxes.length === 0) {
-      Box.regenerateBoxes(app);
-    }
-  });
-
-  // ========= ADD A SPACE SHIP ============
-  const characterEntity = new pc.Entity("character");
-  app.root.addChild(characterEntity);
-  // app.on("update", (dt) => characterEntity.rotate(0, 100 * dt, 0));
-
-  // Up load model 3D
-  app.assets.loadFromUrl(
-    "Models/1.glb",
-    "model",
-    // @ts-ignore
-    (err, asset: pc.Asset | undefined) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      characterEntity.addComponent("model", {
-        type: "asset",
-        asset: asset,
-      });
-      characterEntity.setEulerAngles(115, 0, 115);
-    }
-  );
-  const scale = 5;
-  characterEntity.setLocalScale(scale, scale, scale);
-  characterEntity.setPosition(0, -2, 0);
-
-  // load character texture
-  app.assets.loadFromUrl(
-    "Textures/material_0_albedo.jpg",
-    "texture",
-    // @ts-ignore
-    (err, asset: pc.Asset | undefined) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      const material = new pc.StandardMaterial();
-      // @ts-ignore
-      material.diffuseMap = asset?.resource;
-      material.update();
-      console.log(characterEntity.model);
-      if (characterEntity.model) {
-        characterEntity.model.meshInstances.forEach((meshInstance) => {
-          meshInstance.material = material;
-        });
-      }
-    }
-  );
-
   // ======= ADD LIGHT =========
   const light = new pc.Entity("DirectionalLight");
   app.root.addChild(light);
@@ -115,29 +63,22 @@ function initializeGame() {
   app.setCanvasResolution(pc.RESOLUTION_AUTO);
   window.addEventListener("resize", () => app.resizeCanvas());
 
-  // ====== HANDLE MOVEMENT ======
-  const moveSpeed = 10;
+  // ========= ADD BOXES ============
+  app.on("update", (dt) => {
+    if (Box.boxes.length === 0) {
+      Box.regenerateBoxes(app);
+    }
+  });
+
   // @ts-ignore
   app.keyboard = new pc.Keyboard(window);
 
   app.on("update", (dt) => {
-    // move character
-    if (app.keyboard.isPressed(pc.KEY_W)) {
-      characterEntity.translate(0, moveSpeed * dt, 0);
-    }
-    if (app.keyboard.isPressed(pc.KEY_S)) {
-      characterEntity.translate(0, -moveSpeed * dt, 0);
-    }
-    if (app.keyboard.isPressed(pc.KEY_D)) {
-      characterEntity.translate(moveSpeed * dt, 0, 0);
-    }
-    if (app.keyboard.isPressed(pc.KEY_A)) {
-      characterEntity.translate(-moveSpeed * dt, 0, 0);
-    }
     if (app.keyboard.isPressed(pc.KEY_SPACE)) {
       createBullet();
     }
   });
+  ship.spaceShipMovement();
 
   //========= add bullet ============
   const bullets: pc.Entity[] = [];
@@ -183,7 +124,7 @@ function initializeGame() {
       }
     );
     bullet.setLocalScale(1, 1, 1);
-    const characterPosition = characterEntity.getPosition().clone();
+    const characterPosition = ship.getEntity().getPosition().clone();
     bullet.setPosition(
       characterPosition.x,
       characterPosition.y,
@@ -194,11 +135,30 @@ function initializeGame() {
     bullets.push(bullet);
   }
 
+  // const hitSoundEntity = new pc.Entity();
+  // hitSoundEntity.addComponent("sound", {
+  //   assets: [],
+  //   volume: 1,
+  // });
+
+  // app.assets.loadFromUrl("Explosion/explosion.mp3", "audio", (err, asset) => {
+  //   if (err) {
+  //     console.error("Error loading sound:", err);
+  //     return;
+  //   }
+  //   hitSoundEntity.sound.addSlot("hit", {
+  //     asset: asset,
+  //     loop: false,
+  //   });
+  // });
+
+  // app.root.addChild(hitSoundEntity);
+
   //=========ADD SCORE ============
   let score = 0;
   const scoreElement = document.createElement("div");
   scoreElement.style.position = "absolute";
-  scoreElement.style.top = "10px";
+  scoreElement.style.top = "20px";
   scoreElement.style.right = "10px";
   scoreElement.style.fontFamily = "'Press Start 2P', cursive";
   scoreElement.style.fontSize = "16px";
@@ -264,7 +224,7 @@ function initializeGame() {
       if (box.isFalling) {
         box.translate(0, -box.fallSpeed * dt, 0);
         const boxPos = box.getPosition();
-        const shipPos = characterEntity.getPosition();
+        const shipPos = ship.getEntity().getPosition();
         // @ts-ignore
         const distance = boxPos.distance(shipPos);
 

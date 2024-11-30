@@ -1,4 +1,5 @@
 import * as pc from "playcanvas";
+// text
 export class Background {
   constructor() {}
   setupSkybox(app) {

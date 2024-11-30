@@ -1,14 +1,13 @@
 import * as pc from "playcanvas";
 import { Collision } from "./collision";
 import { Box } from "./box";
-import { Background } from "./background";
+import { SkyboxManager } from "./background";
 import { Spaceship } from "./spaceship";
 // import { Bullet } from "./bullet";
 // import { BulletManager } from "./bulletcollision";
 
 const collision = new Collision();
 const box = new Box();
-const background = new Background();
 
 document.getElementById("start-button")?.addEventListener("click", () => {
   const container = document.getElementById("start-screen");
@@ -31,6 +30,7 @@ function initializeGame() {
 
   // create a PlayCanvas application with the canvas
   const app = new pc.Application(canvas);
+  const background = new SkyboxManager(app);
 
   const ship = new Spaceship(app);
 
@@ -243,7 +243,7 @@ function initializeGame() {
       }
     }
   });
-  background.setupSkybox(app);
+  background.init();
 }
 document.getElementById("start-button")?.addEventListener("click", () => {
   const container = document.getElementById("start-screen");

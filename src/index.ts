@@ -1,10 +1,9 @@
 import * as pc from "playcanvas";
-import { Collision } from "./collision";
-import { Box } from "./box";
-import { SkyboxManager } from "./background";
-import { Spaceship } from "./spaceship";
-// import { Bullet } from "./bullet";
-// import { BulletManager } from "./bulletcollision";
+import { Collision } from "./physics/collision";
+import { Box } from "./components/box";
+import { SkyboxManager } from "./components/background";
+import { Spaceship } from "./components/spaceship";
+import { Sound } from "./components/sound";
 
 const collision = new Collision();
 const box = new Box();
@@ -33,6 +32,7 @@ function initializeGame() {
   const background = new SkyboxManager(app);
 
   const ship = new Spaceship(app);
+  const soundManager = new Sound(app);
 
   //start app
   app.start();
@@ -141,25 +141,6 @@ function initializeGame() {
     volume: 1,
   });
 
-  // ========= ADD SOUND ============
-  app.assets.loadFromUrl(
-    "assets/Explosion/explosion.mp3",
-    "audio",
-    //@ts-ignore
-    (err, asset) => {
-      if (err) {
-        console.error("Error loading sound:", err);
-        return;
-      }
-      hitSoundEntity.sound.addSlot("hit", {
-        asset: asset,
-        loop: false,
-      });
-    }
-  );
-
-  app.root.addChild(hitSoundEntity);
-
   //=========ADD SCORE ============
   let score = 0;
   const scoreElement = document.createElement("div");
@@ -186,7 +167,7 @@ function initializeGame() {
     app.root.removeChild(bullet);
     bullet.destroy();
     bullets.splice(i, 1);
-    hitSoundEntity.sound.play("hit");
+    soundManager.playSound();
 
     // Update score
     score += 1;

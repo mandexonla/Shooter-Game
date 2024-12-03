@@ -1,14 +1,13 @@
 import * as pc from "playcanvas";
 import { Collision } from "./collision";
 import { Box } from "./box";
-import { Background } from "./background";
+import { SkyboxManager } from "./background";
 import { Spaceship } from "./spaceship";
 // import { Bullet } from "./bullet";
 // import { BulletManager } from "./bulletcollision";
 
 const collision = new Collision();
 const box = new Box();
-const background = new Background();
 
 document.getElementById("start-button")?.addEventListener("click", () => {
   const container = document.getElementById("start-screen");
@@ -31,6 +30,7 @@ function initializeGame() {
 
   // create a PlayCanvas application with the canvas
   const app = new pc.Application(canvas);
+  const background = new SkyboxManager(app);
 
   const ship = new Spaceship(app);
 
@@ -135,24 +135,30 @@ function initializeGame() {
     bullets.push(bullet);
   }
 
-  // const hitSoundEntity = new pc.Entity();
-  // hitSoundEntity.addComponent("sound", {
-  //   assets: [],
-  //   volume: 1,
-  // });
+  const hitSoundEntity = new pc.Entity();
+  hitSoundEntity.addComponent("sound", {
+    assets: [],
+    volume: 1,
+  });
 
-  // app.assets.loadFromUrl("Explosion/explosion.mp3", "audio", (err, asset) => {
-  //   if (err) {
-  //     console.error("Error loading sound:", err);
-  //     return;
-  //   }
-  //   hitSoundEntity.sound.addSlot("hit", {
-  //     asset: asset,
-  //     loop: false,
-  //   });
-  // });
+  // ========= ADD SOUND ============
+  app.assets.loadFromUrl(
+    "assets/Explosion/explosion.mp3",
+    "audio",
+    //@ts-ignore
+    (err, asset) => {
+      if (err) {
+        console.error("Error loading sound:", err);
+        return;
+      }
+      hitSoundEntity.sound.addSlot("hit", {
+        asset: asset,
+        loop: false,
+      });
+    }
+  );
 
-  // app.root.addChild(hitSoundEntity);
+  app.root.addChild(hitSoundEntity);
 
   //=========ADD SCORE ============
   let score = 0;
@@ -180,6 +186,7 @@ function initializeGame() {
     app.root.removeChild(bullet);
     bullet.destroy();
     bullets.splice(i, 1);
+    hitSoundEntity.sound.play("hit");
 
     // Update score
     score += 1;
@@ -243,7 +250,7 @@ function initializeGame() {
       }
     }
   });
-  background.setupSkybox(app);
+  background.init();
 }
 document.getElementById("start-button")?.addEventListener("click", () => {
   const container = document.getElementById("start-screen");

@@ -135,24 +135,30 @@ function initializeGame() {
     bullets.push(bullet);
   }
 
-  // const hitSoundEntity = new pc.Entity();
-  // hitSoundEntity.addComponent("sound", {
-  //   assets: [],
-  //   volume: 1,
-  // });
+  const hitSoundEntity = new pc.Entity();
+  hitSoundEntity.addComponent("sound", {
+    assets: [],
+    volume: 1,
+  });
 
-  // app.assets.loadFromUrl("Explosion/explosion.mp3", "audio", (err, asset) => {
-  //   if (err) {
-  //     console.error("Error loading sound:", err);
-  //     return;
-  //   }
-  //   hitSoundEntity.sound.addSlot("hit", {
-  //     asset: asset,
-  //     loop: false,
-  //   });
-  // });
+  // ========= ADD SOUND ============
+  app.assets.loadFromUrl(
+    "assets/Explosion/explosion.mp3",
+    "audio",
+    //@ts-ignore
+    (err, asset) => {
+      if (err) {
+        console.error("Error loading sound:", err);
+        return;
+      }
+      hitSoundEntity.sound.addSlot("hit", {
+        asset: asset,
+        loop: false,
+      });
+    }
+  );
 
-  // app.root.addChild(hitSoundEntity);
+  app.root.addChild(hitSoundEntity);
 
   //=========ADD SCORE ============
   let score = 0;
@@ -180,6 +186,7 @@ function initializeGame() {
     app.root.removeChild(bullet);
     bullet.destroy();
     bullets.splice(i, 1);
+    hitSoundEntity.sound.play("hit");
 
     // Update score
     score += 1;

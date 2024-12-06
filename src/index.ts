@@ -1,8 +1,8 @@
 import * as pc from "playcanvas";
 import { Collision } from "./physics/collision";
-import { Box } from "./components/box";
+import { Box } from "./Models/box";
 import { SkyboxManager } from "./components/background";
-import { Spaceship } from "./components/spaceship";
+import { Spaceship } from "./Models/spaceship";
 import { Sound } from "./components/sound";
 
 const collision = new Collision();

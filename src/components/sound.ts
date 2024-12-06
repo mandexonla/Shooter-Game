@@ -14,7 +14,7 @@ export class Sound {
 
     // Load sound
     this.app.assets.loadFromUrl(
-      "assets/Explosion/explosion.mp3",
+      "assets/Sound/shoot.mp3",
       "audio",
       // @ts-ignore
       (err, asset) => {

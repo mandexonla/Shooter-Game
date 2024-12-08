@@ -12,7 +12,7 @@ export default defineConfig({
     }),
   ],
   mode: "development",
-  base: "/purus-intership-game/",
+  base: "/purus-internship-game/",
   server: {
     port: 8080,
     watch: {

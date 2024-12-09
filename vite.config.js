@@ -11,8 +11,6 @@ export default defineConfig({
       hook: "buildEnd",
     }),
   ],
-  base: "/purus-internship-game/",
-  mode: "development",
   server: {
     port: 8080,
     watch: {
@@ -24,8 +22,8 @@ export default defineConfig({
     assetsDir: "",
     minify: false,
     emptyOutDir: false,
-    copyPublicDir: true,
+    copyPublicDir: false,
     chunkSizeWarningLimit: 1024 * 2, // 2MB
   },
-  publicDir: "assets",
+  publicDir: "dist",
 });

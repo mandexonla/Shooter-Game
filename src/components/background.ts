@@ -6,7 +6,7 @@ export class SkyboxManager {
     "TextureSkybox",
     "cubemap",
     {
-      url: "Skybox/206028223/MilkywayCubemap.dds",
+      url: "Skybox/206028223/Milkyway Cubemap.dds",
     },
     {
       textures: [

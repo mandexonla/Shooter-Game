@@ -11,8 +11,8 @@ export default defineConfig({
       hook: "buildEnd",
     }),
   ],
-  mode: "development",
   base: "/purus-internship-game/",
+  mode: "development",
   server: {
     port: 8080,
     watch: {

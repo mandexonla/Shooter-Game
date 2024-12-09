@@ -6,16 +6,16 @@ export class SkyboxManager {
     "TextureSkybox",
     "cubemap",
     {
-      url: "Assets/Skybox/206028223/MilkywayCubemap.dds",
+      url: "Skybox/206028223/MilkywayCubemap.dds",
     },
     {
       textures: [
-        "assets/Skybox/206028224/Milkyway_posz.png",
-        "assets/Skybox/206028225/Milkyway_posy.png",
-        "assets/Skybox/206028226/Milkyway_posx.png",
-        "assets/Skybox/206028227/Milkyway_negz.png",
-        "assets/Skybox/206028228/Milkyway_negy.png",
-        "assets/Skybox/206028229/Milkyway_negx.png",
+        "Skybox/206028224/Milkyway_posz.png",
+        "Skybox/206028225/Milkyway_posy.png",
+        "Skybox/206028226/Milkyway_posx.png",
+        "Skybox/206028227/Milkyway_negz.png",
+        "Skybox/206028228/Milkyway_negy.png",
+        "Skybox/206028229/Milkyway_negx.png",
       ],
       name: "New Cubemap",
       minFilter: 5,

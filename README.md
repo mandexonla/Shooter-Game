@@ -6,8 +6,7 @@
 ## Start application
 ```npm run start```
 
-## Try game out now
-👉: https://mandexonla.github.io/purus-internship-game/
+## Try game out now 👉: https://mandexonla.github.io/purus-internship-game/
 
 ## 📖 GAME STORY
 Game space shooter usually in context unsiversity space, the place for player in character drive control battleship defense enemy from planet or organization. The main objective of this project was to design and build a platform game. The basics of the game are used from the Space Shooter Game using Typecript among other technologies.

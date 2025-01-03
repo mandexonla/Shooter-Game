@@ -4,6 +4,7 @@ import { Box } from "./Models/box";
 import { SkyboxManager } from "./components/background";
 import { Spaceship } from "./Models/spaceship";
 import { Sound } from "./components/sound";
+import { showGameOverScreen } from "./components/gameOverScreen";
 
 const collision = new Collision();
 const box = new Box();
@@ -134,12 +135,19 @@ function initializeGame() {
     // @ts-ignore
     bullets.push(bullet);
   }
-
+  //========= ADD SOUND ============
   const hitSoundEntity = new pc.Entity();
   hitSoundEntity.addComponent("sound", {
     assets: [],
     volume: 1,
   });
+
+  const initializeIndexSound = new pc.Entity();
+  initializeIndexSound.addComponent("sound", {
+    assets: [],
+    volume: 1,
+  });
+  soundManager.initializeIndexSound();
 
   //=========ADD SCORE ============
   let score = 0;
@@ -219,9 +227,11 @@ function initializeGame() {
         //if box collision with ship
         if (distance < 1) {
           console.log("Game Over");
-          // alert("Game Over");
-          location.reload();
+          showGameOverScreen(() => {
+            window.location.reload(); // Restart game
+          });
         }
+
         //if box fall to low(below ship)
         if (boxPos.y < -3) {
           app.root.removeChild(box);
@@ -233,10 +243,12 @@ function initializeGame() {
   });
   background.init();
 }
+
 document.getElementById("start-button")?.addEventListener("click", () => {
   const container = document.getElementById("start-screen");
   if (container) {
     container.style.display = "none";
   }
+
   initializeGame();
 });

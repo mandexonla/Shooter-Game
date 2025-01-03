@@ -135,12 +135,19 @@ function initializeGame() {
     // @ts-ignore
     bullets.push(bullet);
   }
-
+  //========= ADD SOUND ============
   const hitSoundEntity = new pc.Entity();
   hitSoundEntity.addComponent("sound", {
     assets: [],
     volume: 1,
   });
+
+  const initializeIndexSound = new pc.Entity();
+  initializeIndexSound.addComponent("sound", {
+    assets: [],
+    volume: 1,
+  });
+  soundManager.initializeIndexSound();
 
   //=========ADD SCORE ============
   let score = 0;
@@ -236,10 +243,12 @@ function initializeGame() {
   });
   background.init();
 }
+
 document.getElementById("start-button")?.addEventListener("click", () => {
   const container = document.getElementById("start-screen");
   if (container) {
     container.style.display = "none";
   }
+
   initializeGame();
 });
